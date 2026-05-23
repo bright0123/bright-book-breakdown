@@ -1,12 +1,24 @@
 # Bright-Book-Breakdown
 
+[English](README_EN.md) | **中文**
+
 叙事体拆书工作流：从精读一本书到输出读书笔记 + 概念网络。
 
 ## 这是什么
 
 一个面向 Claude Code 的拆书 skill，帮你把一本书拆解成**可导航的知识网络**，而不是简单的摘录笔记。
 
-核心方法是**三轮认知压缩** + **双层结构笔记** + **wikilink 概念网络**。
+核心方法是**三轮认知压缩** + **双层结构笔记** + **wikilink 概念网络**，结合 **Obsidian** 使用效果最佳。
+
+## Obsidian 联动
+
+本 skill 专为 Obsidian 设计，输出可直接导入 Obsidian vault：
+
+- **读书笔记** → `books/sources/`（叙事体 + 分析层）
+- **概念页** → `books/concepts/`（可导航的知识节点）
+- **Wikilink** → 连接成概念网络，双向可跳转
+
+Obsidian 的双向链接功能让概念页之间形成网状结构，点击任意 `[[wikilink]]` 即可跳转，层层深入。
 
 ## 适用场景
 
@@ -162,8 +174,30 @@ sources: [来源文件路径]
 ```
 bright-book-breakdown/
 ├── SKILL.md          # 技能定义文件（核心）
-└── README.md         # 使用说明
+├── README.md         # 中文说明
+├── README_EN.md     # English README
+└── examples/        # 示例文件
+    ├── INDEX.md     # 示例说明
+    ├── 精益生产.md  # 概念页格式示例
+    └── 失去的制造业.md  # 读书笔记格式示例
 ```
+
+## 示例说明
+
+两个完整示例，展示从精读到概念页的完整流程：
+
+| 文件 | 类型 | 说明 |
+|------|------|------|
+| [examples/失去的制造业.md](examples/失去的制造业.md) | 读书笔记 | 叙事层 + 分析层 |
+| [examples/精益生产.md](examples/精益生产.md) | 概念页 | 标准格式，可直接复用 |
+
+## 参考与致谢
+
+站在前辈们的肩上，本 skill 借鉴了以下开源项目：
+
+- [LLM Wiki](https://github.com/karpathy/llm-utils) by @karpathy — LLM 与知识库的结合
+- [Im-wiki-obsidian-blink](https://github.com/iBlinkQ/Im-wiki-obsidian-blink) by @iBlinkQ — Obsidian + Claude Code 联动
+- [claude-obsidian](https://github.com/AgriciDaniel/claude-obsidian) by @AgriciDaniel — Claude 与 Obsidian 的集成思路
 
 ## License
 
