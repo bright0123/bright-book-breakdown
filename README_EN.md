@@ -2,31 +2,39 @@
 
 **中文** | [English](README.md)
 
-Narrative Book Breakdown Workflow: turn a book into reading notes + navigable concept network.
+Narrative Book Breakdown Workflow: turn a book into a **navigable knowledge network** with Obsidian.
 
-## What is this
+## Core Use Case
 
-A Claude Code skill that breaks down books into a **navigable knowledge network**, not just notes.
+This skill is designed for **Obsidian users** — output directly imports to your Obsidian vault, forming a web of connected knowledge.
 
-Core method: **Three-Round Cognitive Compression** + **Dual-Layer Notes** + **Wikilink Concept Network**, optimized for use with **Obsidian**.
+```
+PDF/EPUB  ──read──→  Reading notes (narrative + analysis)
+                          │
+                    Extract from book
+                          │
+                          ↓
+                   Concept pages (wikilink connected)
+                          │
+                    Import to Obsidian
+                          │
+                          ↓
+                   Navigable knowledge network
+```
 
-## Obsidian Integration
+Click any `[[wikilink]]` to navigate, layer by layer. Concepts are never isolated.
 
-This skill is designed for Obsidian, with output directly importable to your vault:
+## Three-Round Cognitive Compression
 
-- **Reading notes** → `books/sources/` (narrative + analysis layers)
-- **Concept pages** → `books/concepts/` (navigable knowledge nodes)
-- **Wikilink** → Connected concept network, bi-directional navigation
+| Round | Goal | Question Answered |
+|-------|------|-------------------|
+| Skeleton Scan | Build global structure | "What is this book about" |
+| Deep Dissection | Understand argument chain | "Why does the author say this" |
+| Soul Extraction | Go beyond the author | "What else can I do with this" |
 
-Obsidian's bi-directional linking turns concept pages into a web — click any `[[wikilink]]` to navigate, layer by layer.
+## Workflow
 
-## Use Cases
-
-- Read a non-fiction book and want to build a personal knowledge base
-- Connect concepts from a book to your existing knowledge network
-- Using Obsidian or similar tools
-
-## Full Workflow
+### Single Book Reading
 
 ```
 Receive book
@@ -46,33 +54,15 @@ Receive book
 
 ### Batch Ingest
 
-For breaking down entire books at once, generating a concept network:
+Break down entire books at once, generating a concept network:
 
 ```
 PDF/EPUB
   │
-  ├── Text Extraction
-  │    ├── Preferred: PyMuPDF/pdfplumber (embedded text)
-  │    └── Fallback: PaddleOCR (scanned PDF)
-  │
-  ├── Parallel Agent Breakdown
-  │    └── Each chapter → 3-8 concept pages
-  │
-  └── Wikilink Verification
-       └── Dangling links → create concept page first, then link
+  ├── Text extraction (PyMuPDF/pdfplumber preferred, OCR as fallback)
+  ├── Parallel agent breakdown (each chapter → 3-8 concept pages)
+  └── Wikilink verification (dangling links → create concept page first)
 ```
-
-## Text Extraction Rules
-
-| Scenario | Tool | Notes |
-|----------|------|-------|
-| PDF with embedded text | PyMuPDF / pdfplumber | Direct extraction, fast and accurate |
-| Garbled/misaligned text | pdfplumber as backup | Try different tool |
-| Scanned PDF (no text layer) | PaddleOCR GPU | Render page-by-page + OCR |
-
-**Fallback order**: PyMuPDF → pdfplumber → OCR
-
-OCR is the last resort, not the default.
 
 ## Output Structure
 
@@ -125,6 +115,18 @@ sources: [source file path]
 
 **Validation**: Every `[[wikilink]]` must point to an existing file. No dangling links allowed.
 
+## Text Extraction Rules
+
+| Scenario | Tool | Notes |
+|----------|------|-------|
+| PDF with embedded text | PyMuPDF / pdfplumber | Direct extraction, fast and accurate |
+| Garbled/misaligned text | pdfplumber as backup | Try different tool |
+| Scanned PDF (no text layer) | PaddleOCR GPU | Render page-by-page + OCR |
+
+**Fallback order**: PyMuPDF → pdfplumber → OCR
+
+OCR is the last resort, not the default.
+
 ## How to Use
 
 ### Via Claude Code
@@ -146,14 +148,6 @@ Examples:
 2. Place it in your Claude Code skills directory
 3. Restart Claude Code
 
-## Three-Round Cognitive Compression
-
-| Round | Goal | Question Answered |
-|-------|------|-------------------|
-| Skeleton Scan | Build global structure | "What is this book about" |
-| Deep Dissection | Understand argument chain | "Why does the author say this" |
-| Soul Extraction | Go beyond the author | "What else can I do with this" |
-
 ## Comparison with Other Methods
 
 | Method | Characteristics | Difference |
@@ -165,7 +159,7 @@ Examples:
 ## Dependencies
 
 - [Claude Code](https://claude.ai/code)
-- Obsidian (optional, for concept network)
+- [Obsidian](https://obsidian.md/) (core tool, for concept network)
 - PyMuPDF / pdfplumber (text extraction)
 - PaddleOCR (fallback for scanned PDFs)
 
