@@ -1,198 +1,111 @@
-# Bright-Book-Breakdown
+# Bright Book Breakdown
 
-**中文** | [English](README.md)
+A narrative-style book deconstruction workflow for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Core features: three-round cognitive compression + dual-layer reading notes + "first occurrence = link" wikilink convention.
 
-Narrative Book Breakdown Workflow: turn a book into a **navigable knowledge network** with Obsidian.
+## Features
 
-## Core Use Case
+- **Format-agnostic input**: Not limited to PDF or EPUB — supports virtually any book format
+  - Condition: book content must be converted to a text file (.txt, .md) that Claude Code can read
+  - Examples: PDF → OCR to .txt; EPUB/azw3/mobi → parse to .md; scanned books → photo + OCR
+- Three-round cognitive compression: Skeleton Scan → Deep Dissection → Soul Extraction
+- Narrative reading notes output: readable chapter-by-chapter prose + critical analysis layer
+- "First occurrence = link" wikilink convention: jump links in prose, thematic overview at bottom
+- **Optional: Batch Ingest** — partner with Obsidian vault to deconstruct a full book into an interconnected concept network
 
-This skill is designed for **Obsidian users** — output directly imports to your Obsidian vault, forming a web of connected knowledge.
+## Installation
+
+Place the skills directory in your Claude Code skills folder.
+
+## Usage
 
 ```
-PDF/EPUB  ──read──→  Reading notes (narrative + analysis)
-                          │
-                    Extract from book
-                          │
-                          ↓
-                   Concept pages (wikilink connected)
-                          │
-                    Import to Obsidian
-                          │
-                          ↓
-                   Navigable knowledge network
+/bright-book-breakdown 《Book Title》
+/拆书 《Book Title》
+/拆书 《Book Title》 + {specific request}
 ```
 
-Click any `[[wikilink]]` to navigate, layer by layer. Concepts are never isolated.
+## Two-Layer Workflow
 
-## Three-Round Cognitive Compression
-
-| Round | Goal | Question Answered |
-|-------|------|-------------------|
-| Skeleton Scan | Build global structure | "What is this book about" |
-| Deep Dissection | Understand argument chain | "Why does the author say this" |
-| Soul Extraction | Go beyond the author | "What else can I do with this" |
-
-## Workflow
-
-### Single Book Reading
+### Layer 1: Single Book Deep Read (Steps 1–3)
 
 ```
 Receive book
   │
-  ├── Step 1: Three-Round Cognitive Compression (internal only)
-  │    ├── Skeleton Scan → "What is this book about"
-  │    ├── Deep Dissection → "Why does the author say this"
-  │    └── Soul Extraction → "What else can I do with this"
+  ├── Step 1: Three-round cognitive compression (internal only, not written to disk)
+  │    ├── Skeleton Scan → global structure
+  │    ├── Deep Dissection → argumentation chain
+  │    └── Soul Extraction → beyond the author
   │
-  ├── Step 2: Write Narrative Reading Notes
-  │    ├── Narrative Layer: chapter text (400-800 chars/chapter)
-  │    └── Analysis Layer: critical analysis components
+  ├── Step 2: Write narrative reading notes (output to books/sources/)
+  │    ├── Narrative layer: readable chapter-by-chapter prose
+  │    └── Analysis layer: critical analysis components
   │
-  └── Step 3: Verify and Update Related Concepts
-       └── First occurrence → [[wikilink]]
+  └── Step 3: Validate and update related concepts (grouped by theme at bottom)
 ```
 
-### Batch Ingest
+### Layer 2: Batch Ingest into Knowledge Base (Optional)
 
-Break down entire books at once, generating a concept network:
+Partner with Obsidian vault to deconstruct a full book into an interconnected concept network. **A one-time event, not ongoing construction.**
 
 ```
-PDF/EPUB
-  │
-  ├── Text extraction (PyMuPDF/pdfplumber preferred, OCR as fallback)
-  ├── Parallel agent breakdown (each chapter → 3-8 concept pages)
-  └── Wikilink verification (dangling links → create concept page first)
+Batch Ingest one book
+    │
+    ├── Phase 1: Text extraction (text layer first, OCR as fallback)
+    │    ├── Text layer available (embedded in PDF/EPUB) → extract directly
+    │    └── Scanned / corrupted text layer → OCR extract to .txt
+    │
+    ├── Phase 2: Chapter segmentation
+    │    ├── Split by table of contents into individual .txt files
+    │    └── Store in vault's raw/chapters/ directory
+    │
+    ├── Phase 3: Parallel agent deconstruction
+    │    ├── Each chapter → one background agent
+    │    ├── Each agent identifies 3–8 sub-concepts
+    │    ├── Each sub-concept → one books/concepts/ page
+    │    └── Link with [[wikilink]] to related concepts
+    │
+    └── Phase 4: Integration
+         ├── Wikilink validation (scan all new pages; create concept pages for dangling links first)
+         ├── Update books/meta/index.md (global index)
+         ├── Append books/meta/log.md (operation log)
+         └── Update books/meta/hot.md (high-value page markers)
 ```
 
-## Output Structure
+## Vault Output Structure
+
+After running Batch Ingest, the vault directory structure:
 
 ```
 vault/
+├── raw/                          # Original book files (one-time storage)
+│   ├── books/                     # Raw books (PDF/EPUB/TXT etc.)
+│   └── chapters/                  # Text split by chapter
 ├── books/
-│   ├── sources/        # Reading notes (narrative + analysis)
-│   ├── concepts/       # Concept page network
-│   ├── entities/       # Person/organization entity pages
-│   └── meta/
-│       ├── index.md    # Knowledge base index
-│       └── log.md      # Operation log
+│   ├── sources/                  # Reading notes (narrative, readable)
+│   │   └── {BookTitle}.md
+│   ├── concepts/                 # Sub-concept pages (batch generated)
+│   │   └── {ConceptName}.md
+│   ├── entities/                 # People/orgs/books etc.
+│   ├── comparisons/              # Comparative analysis notes
+│   ├── meta/
+│   │   ├── index.md              # Global index (all concept page directory)
+│   │   ├── log.md                # Operation log (appended each session)
+│   │   └── hot.md                # High-value page markers (sorted by relevance)
+│   └── sources/                  # Categorized book directories
+└── wiki/                         # Thematic overview notes (optional)
 ```
 
-### Concept Page Format
+**Notes**:
+- `meta/index.md`, `meta/log.md`, `meta/hot.md` are the navigation infrastructure of the knowledge base
+- `raw/` stores original book files — can be cleared or kept after deconstruction
+- Concept pages connect via [[wikilink]] to form a navigable knowledge graph
 
-```markdown
----
-title: {Concept Name}
-type: concept
-created: {YYYY-MM-DD}
-updated: {YYYY-MM-DD}
-tags: [tag1, tag2]
-sources: [source file path]
----
+## Wikilink Convention
 
-# {Concept Name}
+**First occurrence = link**: When a concept first appears in the narrative → inline `[[wikilink]]`; subsequent appearances → plain text without link. The "Related Concepts" section at the bottom provides a thematic overview.
 
-> One-sentence definition
-
-## Core Content
-(Key points extracted from the original text)
-
-## Operational Guide
-(How to apply this concept in practice)
-
-## Related Concepts
-- [[Related Concept 1]]
-- [[Related Concept 2]]
-
-## References
-- [[Source Page]]
-```
-
-### Wikilink Rules
-
-- **First occurrence**: Add `[[wikilink]]` in body text
-- **Subsequent occurrences**: Plain text, no link
-- **Related Concepts section**: Grouped by topic at bottom
-
-**Validation**: Every `[[wikilink]]` must point to an existing file. No dangling links allowed.
-
-## Text Extraction Rules
-
-| Scenario | Tool | Notes |
-|----------|------|-------|
-| PDF with embedded text | PyMuPDF / pdfplumber | Direct extraction, fast and accurate |
-| Garbled/misaligned text | pdfplumber as backup | Try different tool |
-| Scanned PDF (no text layer) | PaddleOCR GPU | Render page-by-page + OCR |
-
-**Fallback order**: PyMuPDF → pdfplumber → OCR
-
-OCR is the last resort, not the default.
-
-## How to Use
-
-### Via Claude Code
-
-```
-/bright-book-breakdown {Book Title}+{specific request}
-```
-
-Examples:
-```
-/bright-book-breakdown 《Thinking, Fast and Slow》
-/bright-book-breakdown 《合同起草审查指南》+rewrite as narrative
-/拆书 《企业合规指南》+Batch Ingest
-```
-
-### Integrate into Your Own Skills
-
-1. Download `SKILL.md`
-2. Place it in your Claude Code skills directory
-3. Restart Claude Code
-
-## Comparison with Other Methods
-
-| Method | Characteristics | Difference |
-|--------|----------------|------------|
-| Copy-paste notes | Transcribing passages | This skill extracts structure, not copy |
-| Mind map | Tree-like diverging | This skill has narrative logic + critical analysis |
-| Zettelkasten | Atomic cards | This skill emphasizes first-occurrence linking, forming a network |
-
-## Dependencies
-
-- [Claude Code](https://claude.ai/code)
-- [Obsidian](https://obsidian.md/) (core tool, for concept network)
-- PyMuPDF / pdfplumber (text extraction)
-- PaddleOCR (fallback for scanned PDFs)
-
-## File Structure
-
-```
-bright-book-breakdown/
-├── SKILL.md          # Skill definition (core)
-├── README.md         # Chinese README
-├── README_EN.md     # English README
-└── examples/        # Example files
-    ├── INDEX.md     # Example guide
-    ├── 精益生产.md  # Concept page example
-    └── 失去的制造业.md  # Reading notes example
-```
-
-## Examples
-
-Two complete examples showing the full flow from reading to concept pages:
-
-| File | Type | Description |
-|------|------|-------------|
-| [examples/失去的制造业.md](examples/失去的制造业.md) | Reading Notes | Narrative layer + Analysis layer |
-| [examples/精益生产.md](examples/精益生产.md) | Concept Page | Standard format, reusable |
-
-## Acknowledgments
-
-Standing on the shoulders of giants, this skill draws inspiration from:
-
-- [LLM Wiki](https://github.com/karpathy/llm-utils) by @karpathy — LLM + knowledge base integration
-- [Im-wiki-obsidian-blink](https://github.com/iBlinkQ/Im-wiki-obsidian-blink) by @iBlinkQ — Obsidian + Claude Code integration
-- [claude-obsidian](https://github.com/AgriciDaniel/claude-obsidian) by @AgriciDaniel — Claude and Obsidian integration
+**Prerequisite**: Target concept files must exist before writing links. In Batch Ingest mode, they are pre-created by Phase 3 agents.
 
 ## License
 
-MIT
+MIT License

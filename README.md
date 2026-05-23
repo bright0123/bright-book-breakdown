@@ -1,198 +1,111 @@
-# Bright-Book-Breakdown
+# Bright Book Breakdown
 
-[English](README_EN.md) | **中文**
+叙事体拆书工作流 — 一个 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) Skill，核心是三轮认知压缩 + 双层结构笔记 + 首次出现即链接的 wikilink 规范。
 
-叙事体拆书工作流：结合 Obsidian，把一本书拆解成**可导航的知识网络**。
+## 功能
 
-## 核心场景
+- **输入自由**：不拘泥于 PDF 或 EPUB，支持绝大多数书籍格式
+  - 条件：书籍内容需转化为 Claude Code Skill 能读取的文本文件（.txt、.md）
+  - 例如：PDF → 用 OCR 提取为 .txt；EPUB/azw3/mobi → 用解析工具转 .md；扫描书 → 拍照后 OCR
+- 三轮认知压缩：骨架扫描 → 血肉解剖 → 灵魂提取
+- 输出叙事体读书笔记：可精读的章节叙述 + 批判分析层
+- 首次出现即链接的 wikilink 规范：叙事层中跳转，底部关联概念提供全貌
+- **可选：批量入知识库** — 配合 Obsidian vault，将全书拆解为互联概念网络
 
-本 skill 为 **Obsidian 用户**设计，输出可直接导入 Obsidian vault，形成网状连接的知识库。
+## 安装
+
+将 skills 目录放在 Claude Code 的 skills 目录下。
+
+## 使用
 
 ```
-PDF/EPUB  ──精读──→  读书笔记（叙事体+分析层）
-                          │
-                    从书中提取
-                          │
-                          ↓
-                   概念页（wikilink 互联）
-                          │
-                    导入 Obsidian
-                          │
-                          ↓
-                   可导航的知识网络
+/bright-book-breakdown 《书名》
+/拆书 《书名》
+/拆书 《书名} + {具体需求}
 ```
 
-点击任意 `[[wikilink]]` 即可跳转，层层深入，概念不再孤立。
+## 工作流两层架构
 
-## 三轮认知压缩
-
-| 轮次 | 目标 | 回答的问题 |
-|------|------|-----------|
-| 骨架扫描 | 建立全局结构 | "这本书在说什么" |
-| 血肉解剖 | 理解论证链条 | "凭什么这么说" |
-| 灵魂提取 | 超越作者 | "还能怎么用" |
-
-## 工作流
-
-### 单本精读
+### 第一层：单本精读（Step 1-3）
 
 ```
 接收书籍
   │
-  ├── Step 1: 三轮认知压缩（内部分析，不输出）
-  │    ├── 骨架扫描 → 全书在说什么
-  │    ├── 血肉解剖 → 凭什么这么说
-  │    └── 灵魂提取 → 还能怎么用
+  ├── Step 1：三轮认知压缩（内部分析，不输出）
+  │    ├── 骨架扫描 → 全局结构
+  │    ├── 血肉解剖 → 论证链条
+  │    └── 灵魂提取 → 超越作者
   │
-  ├── Step 2: 写叙事体读书笔记
-  │    ├── 叙事层：章节叙述（400-800字/章）
+  ├── Step 2：写叙事体读书笔记（输出到 books/sources/）
+  │    ├── 叙事层：可精读的章节叙述
   │    └── 分析层：批判分析组件
   │
-  └── Step 3: 验证并更新关联概念
-       └── 首次出现即 [[wikilink]]
+  └── Step 3：验证并更新关联概念（底部按主题分组）
 ```
 
-### 批量拆书（Batch Ingest）
+### 第二层：批量入知识库（可选，Batch Ingest）
 
-一次性拆完全书，生成概念网络：
+配合 Obsidian vault 使用，将全书拆解为互联概念网络。**一次性动作，不是持续建设。**
 
 ```
-PDF/EPUB
-  │
-  ├── 文本提取（优先 PyMuPDF/pdfplumber，OCR 作为降级）
-  ├── 并行 Agent 拆解（每章 → 3-8 个概念页）
-  └── Wikilink 验证（悬空链接 → 先建概念页再补）
+Batch Ingest 一本书
+    │
+    ├── Phase 1：文本提取（优先文本层，OCR 降级）
+    │    ├── 文本层可用（PDF/EPUB 内嵌文本）→ 直接提取
+    │    └── 扫描版 / 文本层损坏 → OCR 提取为 .txt
+    │
+    ├── Phase 2：章节分割
+    │    ├── 按目录分章节输出为独立 .txt 文件
+    │    └── 存储于 vault 的 raw/chapters/ 目录
+    │
+    ├── Phase 3：并行 Agent 拆解
+    │    ├── 每章节 → 一个 background agent
+    │    ├── 每个 agent 识别 3-8 个子概念
+    │    ├── 每个子概念创建 books/concepts/ 页面
+    │    └── 用 [[wikilink]] 链接到相关概念
+    │
+    └── Phase 4：整合
+         ├── Wikilink 验证（扫描所有新页面，悬空链接先建概念页再补链）
+         ├── 更新 books/meta/index.md（全局索引）
+         ├── 追加 books/meta/log.md（操作记录）
+         └── 更新 books/meta/hot.md（高价值页面标记）
 ```
 
-## 输出结构
+## Vault 输出结构
+
+运行 Batch Ingest 后，vault 目录结构如下：
 
 ```
 vault/
+├── raw/                          # 原始书籍文件（一次性存入）
+│   ├── books/                     # 原始书籍（PDF/EPUB/TXT 等）
+│   └── chapters/                  # 按章节分割后的文本
 ├── books/
-│   ├── sources/        # 读书笔记（叙事体 + 分析层）
-│   ├── concepts/       # 概念页网络
-│   ├── entities/       # 人物/组织实体页
-│   └── meta/
-│       ├── index.md    # 知识库索引
-│       └── log.md      # 操作日志
+│   ├── sources/                  # 读书笔记（叙事体，可精读）
+│   │   └── {书名}.md
+│   ├── concepts/                 # 子概念页（可批量生成）
+│   │   └── {概念名}.md
+│   ├── entities/                 # 人物/组织/书籍等实体
+│   ├── comparisons/              # 比较分析笔记
+│   ├── meta/
+│   │   ├── index.md              # 全局索引（所有概念页的目录）
+│   │   ├── log.md                # 操作记录（每次拆书追加）
+│   │   └── hot.md                # 高价值页面标记（按热度排序）
+│   └── sources/                  # 各分类书籍目录
+└── wiki/                         # 主题综述笔记（可选）
 ```
 
-### 概念页格式
+**说明**：
+- `meta/index.md`、`meta/log.md`、`meta/hot.md` 是知识库的导航基础设施
+- `raw/` 存放原始书籍文件，拆完后可清空或保留
+- 概念页生成后通过 [[wikilink]] 互相连接，形成可导航的知识图谱
 
-```markdown
----
-title: {概念名称}
-type: concept
-created: {日期}
-updated: {日期}
-tags: [标签1, 标签2]
-sources: [来源文件路径]
----
+## Wikilink 规范
 
-# {概念名称}
+**首次出现即链接**：概念第一次在正文中出现时 → inline `[[wikilink]]`；同一概念再次出现 → 不加链接。
 
-> 一句话定义
+**前提条件**：概念文件必须先存在。Batch Ingest 模式下由 Phase 3 的 Agent 预先创建。
 
-## 核心内容
-（从原文中提炼的关键要点）
+## 版权
 
-## 操作指引
-（这个概念如何落地到实际工作中）
-
-## 关联概念
-- [[相关概念1]]
-- [[相关概念2]]
-
-## 参考
-- [[来源页面]]
-```
-
-### Wikilink 规范
-
-- **首次出现**：在正文中加 `[[wikilink]]`
-- **再次出现**：纯文本，不加链接
-- **关联概念节**：底部按主题分组列出
-
-**验证**：任何 `[[wikilink]]` 指向的文件必须先存在，不允许悬空链接。
-
-## 文本层提取规则
-
-| 情况 | 工具 | 说明 |
-|------|------|------|
-| PDF 有嵌入文本 | PyMuPDF / pdfplumber | 直接提取，速度快准确率高 |
-| 文本乱码/乱序 | pdfplumber 备选 | 换工具重试 |
-| 扫描 PDF（无文本层）| PaddleOCR GPU | 逐页渲染 + OCR 识别 |
-
-**降级顺序**：PyMuPDF → pdfplumber → OCR
-
-OCR 仅作为最后手段，不要默认使用 OCR。
-
-## 使用方法
-
-### 通过 Claude Code 调用
-
-```
-/bright-book-breakdown 《书名》+{具体需求}
-```
-
-示例：
-```
-/bright-book-breakdown 《思考，快与慢》
-/bright-book-breakdown 《合同起草审查指南》+改写成叙事体
-/拆书 《企业合规指南》+Batch Ingest
-```
-
-### 集成到自己的 skills
-
-1. 下载 `SKILL.md`
-2. 放入 Claude Code skills 目录
-3. 重启 Claude Code
-
-## 与其他方法的区别
-
-| 方法 | 特点 | 区别 |
-|------|------|------|
-| 抄书笔记 | 摘录段落 | 本 skill 不抄段落，只提取结构 |
-| 思维导图 | 树状发散 | 本 skill 有叙事逻辑 + 批判分析 |
-| 卡片盒 | 原子化卡片 | 本 skill 强调首次出现即链接，形成网络 |
-
-## 依赖环境
-
-- [Claude Code](https://claude.ai/code)
-- [Obsidian](https://obsidian.md/)（核心工具，用于概念网络）
-- PyMuPDF / pdfplumber（文本提取）
-- PaddleOCR（扫描 PDF 降级使用）
-
-## 文件结构
-
-```
-bright-book-breakdown/
-├── SKILL.md          # 技能定义文件（核心）
-├── README.md         # 中文说明
-├── README_EN.md     # English README
-└── examples/        # 示例文件
-    ├── INDEX.md     # 示例说明
-    ├── 精益生产.md  # 概念页格式示例
-    └── 失去的制造业.md  # 读书笔记格式示例
-```
-
-## 示例说明
-
-两个完整示例，展示从精读到概念页的完整流程：
-
-| 文件 | 类型 | 说明 |
-|------|------|------|
-| [examples/失去的制造业.md](examples/失去的制造业.md) | 读书笔记 | 叙事层 + 分析层 |
-| [examples/精益生产.md](examples/精益生产.md) | 概念页 | 标准格式，可直接复用 |
-
-## 参考与致谢
-
-站在前辈们的肩上，本 skill 借鉴了以下开源项目：
-
-- [LLM Wiki](https://github.com/karpathy/llm-utils) by @karpathy — LLM 与知识库的结合
-- [Im-wiki-obsidian-blink](https://github.com/iBlinkQ/Im-wiki-obsidian-blink) by @iBlinkQ — Obsidian + Claude Code 联动
-- [claude-obsidian](https://github.com/AgriciDaniel/claude-obsidian) by @AgriciDaniel — Claude 与 Obsidian 的集成思路
-
-## License
-
-MIT
+MIT License
