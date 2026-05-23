@@ -1,6 +1,6 @@
 # Bright Book Breakdown
 
-**中文文档：** [README.zh-CN.md](README.zh-CN.md)
+**中文文档：** [README.md](README.md)
 
 A narrative-style book deconstruction workflow for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Core features: three-round cognitive compression + dual-layer reading notes + "first occurrence = link" wikilink convention.
 

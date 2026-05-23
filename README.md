@@ -1,6 +1,6 @@
 # Bright Book Breakdown
 
-**English docs:** [README.md](README.md)
+**English docs:** [README.zh-CN.md](README.zh-CN.md)
 
 叙事体拆书工作流 — 一个 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) Skill，核心是三轮认知压缩 + 双层结构笔记 + 首次出现即链接的 wikilink 规范。
 
@@ -62,7 +62,7 @@ Batch Ingest 一本书
     │
     ├── Phase 3：并行 Agent 拆解
     │    ├── 每章节 → 一个 background agent
-    │    ├── 每个 agent 识别 3-8 个子概念
+    │    ├── 每个 agent 识别 3–8 个子概念
     │    ├── 每个子概念创建 books/concepts/ 页面
     │    └── 用 [[wikilink]] 链接到相关概念
     │
