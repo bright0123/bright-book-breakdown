@@ -106,6 +106,14 @@ vault/
 
 **Prerequisite**: Target concept files must exist before writing links. In Batch Ingest mode, they are pre-created by Phase 3 agents.
 
+## Acknowledgements
+
+This skill draws inspiration from the following projects:
+
+- **Karpathy's LLM Wiki** — core concept of using LLM as a local knowledge base
+- [claude-obsidian](https://github.com/AgriciDaniel/claude-obsidian) — workflow ideas for Claude Code + Obsidian integration
+- [Im-wiki-obsidian-blink](https://github.com/iBlinkQ/Im-wiki-obsidian-blink) — practical reference for Obsidian bidirectional linking + AI
+
 ## License
 
 MIT License

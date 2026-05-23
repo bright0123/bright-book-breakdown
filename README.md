@@ -106,6 +106,14 @@ vault/
 
 **前提条件**：概念文件必须先存在。Batch Ingest 模式下由 Phase 3 的 Agent 预先创建。
 
+## 致谢
+
+本 skill 借鉴了以下项目/文章的思想：
+
+- **Karpathy's LLM Wiki** — LLM 作为本地知识库的核心思路
+- [claude-obsidian](https://github.com/AgriciDaniel/claude-obsidian) — Claude Code 与 Obsidian 联动的工作流启发
+- [Im-wiki-obsidian-blink](https://github.com/iBlinkQ/Im-wiki-obsidian-blink) — Obsidian 双链笔记与 AI 结合的实践参考
+
 ## 版权
 
 MIT License
