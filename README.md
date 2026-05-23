@@ -1,6 +1,6 @@
 # Bright Book Breakdown
 
-**English docs:** [README.zh-CN.md](README.zh-CN.md)
+**English docs:** [README.EN.md](README.EN.md)
 
 叙事体拆书工作流 — 一个 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) Skill，核心是三轮认知压缩 + 双层结构笔记 + 首次出现即链接的 wikilink 规范。
 
